@@ -4,7 +4,7 @@ import viteLogo from "@/shared/assets/vite.svg";
 import heroImg from "@/shared/assets/hero.png";
 import "./home.css";
 
-export const Home = () => {
+export const HomePage = () => {
   const [count, setCount] = useState(0);
 
   return (
