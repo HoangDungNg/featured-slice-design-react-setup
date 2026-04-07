@@ -5,23 +5,11 @@ import {
   createRoute,
   createRouter,
   Outlet,
-  Link,
 } from "@tanstack/react-router";
 
 // Root layout
 const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <nav style={{ padding: 16, display: "flex", gap: 12 }}>
-        <Link to="/">Home</Link>
-        <Link to="/todos">Todos</Link>
-      </nav>
-
-      <hr />
-
-      <Outlet />
-    </>
-  ),
+  component: () => <Outlet />,
 });
 
 // Home route
