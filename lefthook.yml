@@ -1,0 +1,12 @@
+pre-commit:
+  jobs:
+    - name: dprint format staged files
+      files: git diff --cached --name-only --diff-filter=ACMR
+      glob: "**/*.{js,jsx,ts,tsx,json,md,toml,yml,yaml}"
+      run: bunx dprint fmt --config dprint.json {files}
+      stage_fixed: true
+
+    - name: oxlint staged files
+      files: git diff --cached --name-only --diff-filter=ACMR
+      glob: "**/*.{js,jsx,ts,tsx}"
+      run: bunx oxlint {files}

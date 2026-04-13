@@ -18,14 +18,14 @@
     "bracePosition": "sameLine",
     "nextControlFlowPosition": "sameLine",
     "binaryExpression.linePerExpression": false,
-    "singleBodyPosition": "sameLineUnlessHanging",
+    "singleBodyPosition": "sameLine",
     "memberExpression.linePerExpression": false,
     "typeLiteral.separatorKind.singleLine": "comma",
     "typeLiteral.separatorKind.multiLine": "semiColon",
     "jsx.multiLineParens": "prefer",
     "jsx.forceNewLinesSurroundingContent": false,
     "jsx.bracketPosition": "nextLine",
-    "exportDeclaration.forceMultiLine": false
+    "exportDeclaration.forceMultiLine": "never"
   },
   "json": {
   },

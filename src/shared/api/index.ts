@@ -1,0 +1,1 @@
+export { alovaInstance } from "./alova";
