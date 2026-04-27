@@ -1,10 +1,44 @@
+import type { Todo } from '@/entities/todo'
+
 import {
   TODO_BULK_ACTIONS,
   TODO_FILTERS,
   TODO_SORT_OPTIONS,
-} from "../model/todo-toolbar.config";
+  type TodoSortOption,
+} from '../model/todo-toolbar.config'
+import { useTodoToolbar } from '../model/todo-toolbar.hook'
 
-export const TodoToolbar = () => {
+interface TodoToolbarProps {
+  onFilterResults: (items: Todo[]) => void
+  onResetFilter: () => void
+  onSelectedTodoAction: (todoId: string) => void
+  selectedTodoId?: string | null
+  onSortChange: (option: TodoSortOption) => void
+}
+
+export const TodoToolbar = (
+  { onFilterResults, onResetFilter, onSelectedTodoAction, selectedTodoId = null, onSortChange }:
+    TodoToolbarProps,
+) => {
+  const {
+    activeFilter,
+    bulkActionError,
+    filterError,
+    handleBulkActionClick,
+    handleFilterButtonClick,
+    handleSearchChange,
+    handleSearchSubmit,
+    handleSortChange,
+    loading,
+    searchQuery,
+  } = useTodoToolbar({
+    onFilterResults,
+    onResetFilter,
+    onSelectedTodoAction,
+    onSortChange,
+    selectedTodoId,
+  })
+
   return (
     <section className="rounded-3xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-lg shadow-black/20 backdrop-blur">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
@@ -18,11 +52,15 @@ export const TodoToolbar = () => {
           </h2>
 
           <p className="mt-3 text-sm leading-7 text-zinc-400">
-            A compact control bar for finding tasks quickly and applying bulk actions without leaving the page.
+            A compact control bar for finding tasks quickly and applying bulk actions without
+            leaving the page.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 xl:min-w-[28rem] xl:grid-cols-4">
+        <form
+          className="grid gap-3 sm:grid-cols-2 xl:min-w-[28rem] xl:grid-cols-3"
+          onSubmit={handleSearchSubmit}
+        >
           <label className="sm:col-span-2">
             <span className="mb-2 block text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
               Search
@@ -31,47 +69,45 @@ export const TodoToolbar = () => {
               <span aria-hidden="true">⌕</span>
               <input
                 type="search"
-                placeholder="Search tasks"
+                placeholder="Search task content"
+                value={searchQuery}
                 className="w-full bg-transparent text-sm text-white outline-none placeholder:text-zinc-600"
+                onChange={handleSearchChange}
               />
             </div>
           </label>
 
           <label>
             <span className="mb-2 block text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
-              Filter
-            </span>
-            <select className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-zinc-700">
-              {TODO_FILTERS.map((filter) => (
-                <option key={filter}>{filter}</option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            <span className="mb-2 block text-xs font-medium uppercase tracking-[0.2em] text-zinc-500">
               Sort
             </span>
-            <select className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-zinc-700">
-              {TODO_SORT_OPTIONS.map((option) => (
-                <option key={option}>{option}</option>
-              ))}
+            <select
+              className="w-full rounded-2xl border border-zinc-800 bg-zinc-950/80 px-4 py-3 text-sm text-white outline-none transition focus:border-zinc-700"
+              onChange={handleSortChange}
+            >
+              {TODO_SORT_OPTIONS.map((option) => <option key={option}>{option}</option>)}
             </select>
           </label>
-        </div>
+        </form>
       </div>
+
+      {filterError && <p className="mt-4 text-sm text-rose-300">{filterError}</p>}
+      {bulkActionError && <p className="mt-4 text-sm text-rose-300">{bulkActionError}</p>}
 
       <div className="mt-6 grid gap-3 md:grid-cols-[1fr_auto]">
         <div className="flex flex-wrap gap-2">
-          {TODO_FILTERS.map((filter, index) => (
+          {TODO_FILTERS.map((filter) => (
             <button
               key={filter}
               type="button"
+              value={filter}
+              disabled={loading}
               className={`rounded-full border px-4 py-2 text-sm transition ${
-                index === 0
-                  ? "border-white bg-white text-zinc-950"
-                  : "border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900"
+                filter === activeFilter
+                  ? 'border-white bg-white text-zinc-950'
+                  : 'border-zinc-800 bg-zinc-950 text-zinc-300 hover:border-zinc-700 hover:bg-zinc-900'
               }`}
+              onClick={handleFilterButtonClick}
             >
               {filter}
             </button>
@@ -83,7 +119,10 @@ export const TodoToolbar = () => {
             <button
               key={action}
               type="button"
-              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-white"
+              value={action}
+              disabled={!selectedTodoId || loading}
+              className="rounded-2xl border border-zinc-800 bg-zinc-950 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:border-zinc-700 hover:bg-zinc-900 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={handleBulkActionClick}
             >
               {action}
             </button>
@@ -91,5 +130,5 @@ export const TodoToolbar = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}

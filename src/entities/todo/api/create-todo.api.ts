@@ -1,5 +1,9 @@
-import { alovaInstance } from "@/shared/api";
-import type { TodoWriteInput } from "../model/todo.model";
+import { alovaInstance } from '@/shared/api'
+import { TODO_ENDPOINTS } from '../config/todo-endpoint.config'
+import { normalizeTodo, type TodoApiItem, type TodoWriteInput } from '../model/todo.model'
 
 export const createTodo = (todo: TodoWriteInput) =>
-  alovaInstance.Post("/todos", todo, { name: "create-todo" });
+  alovaInstance.Post(TODO_ENDPOINTS.TASK_LIST, todo, {
+    name: 'create-todo',
+    transform: (rawData: TodoApiItem) => normalizeTodo(rawData),
+  })
